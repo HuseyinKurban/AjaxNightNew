@@ -14,6 +14,40 @@
 
 <hr />
 
+<div class="alert alert-secondary">Müşteri Listesi</div>
+<div id="customerlist">
+</div>
+
+<div>
+    <div class="alert alert-info">Yeni Müşteri Girişi</div>
+    <input type="text" class="form-control" id="txtcustomername" placeholder="Müşteri Adı" />
+    <br />
+    <input type="text" class="form-control" id="txtcustomersurname" placeholder="Müşteri Soyadı" />
+    <br />
+</div>
+
+<div>
+    <div class="alert alert-info">Müşteri Silme Alanı</div>
+    <input type="text" class="form-control" id="txtcustomerid" placeholder="Silinecek Müşteri Id" />
+    <br />
+</div>
+
+<div>
+    <div class="alert alert-info">Müşteri Güncelleme Ekranı</div>
+    <input type="text" class="form-control" id="txteditcustomerid" placeholder="Güncellenecek Müşteri Id" />
+    <br />
+    <input type="text" class="form-control" id="txteditcustomername" placeholder="Güncellenecek Müşteri Adı" />
+    <br />
+    <input type="text" class="form-control" id="txteditcustomersurname" placeholder="Güncellenecek Müşteri Soyadı" />
+    <br />
+</div>
+
+<div>
+    <div class="alert alert-success">Id'ye Göre Bilgi Getirme</div>
+    <input type="text" class="form-control" id="txtgetid" placeholder="Biglileri Getirilecek Müşteri Id" />
+    <br />
+</div>
+
 <script>
     $("#btnlist").click(function () {
         $.ajax({
@@ -24,7 +58,86 @@
             success: function (funk1) {
                 let customers = jQuery.parseJSON(funk1);
                 console.log(customers);
+
+                let tablehtml="<table class=table table-bordered>"
+                +"<tr>"
+                +"<th>Müşteri Id </th>"
+                +"<th>Müşteri Adı </th>"
+                +"<th>Müşteri Soyadı </th>"
+                +"</tr>"
+
+                $.each(customers, (index, value)=> {
+                    tablehtml +=`<tr>`
+                    +`<td>${value.CustomerId}</td>`
+                    +`<td>${value.CustomerName}</td>`
+                    +`<td>${value.CustomerSurname}</td>`
+                    +`</tr>`
+                });
+                tablehtml+="</table>";
+                $("#customerlist").html(tablehtml);
             }
         });
+
+
+    });
+
+    $("#btnadd").click(function (){
+       let customervalues={
+              CustomerName:$("#txtcustomername").val(),
+              CustomerSurname:$("#txtcustomersurname").val()
+       };
+
+       $.ajax({
+           type:"post",
+           url:"/Customer/CreateCustomer/",
+           data:customervalues,
+           success:function(funk2){
+                let result=jQuery.parseJSON(funk2);
+                alert("Ekleme İşlemi Başarılı");
+              }
+         });
+    });
+
+    $("#btnremove").click(function(){
+        let id=$("#txtcustomerid").val();
+        $.ajax({
+            url:"/Customer/DeleteCustomer/"+id,
+            success:function(funk4){
+
+                alert("Silme İşlemi Başarılı");
+            }
+        });
+
+    });
+
+    $("#btnupdate").click(function (){
+        let values={
+            CustomerId:$("#txteditcustomerid").val(),
+            CustomerName:$("#txteditcustomername").val(),
+            CustomerSurname:$("#txteditcustomersurname").val()
+        };
+        $.ajax({
+
+            url:"/Customer/UpdateCustomer/",
+            data:values,
+            success:function(funk3){
+                alert("Güncelleme İşlemi Başarılı");
+            }
+        });
+    });
+
+    $("#btnget").click(function () {
+     let id=$("#txtgetid").val();
+          $.ajax({
+
+    contentType:"application/json",
+    dataType:"json",
+    url:"/Customer/GetCustomer/"+id,
+    success:function (funk5){
+        let result=jQuery.parseJSON(funk5);
+        console.log(result);
+    }
+    });
+
     });
 </script>
